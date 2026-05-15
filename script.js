@@ -42,35 +42,69 @@ function PolaroidNav(items) {
   `;
 }
 
-function JournalModal({ id, title, childrenHTML }) {
+function JournalModal({
+  id,
+  title,
+  leftHTML = "",
+  rightHTML = "",
+  modalClass = "",
+  bookClass = "",
+  leftPageClass = "",
+  rightPageClass = "",
+  titleClass = "",
+}) {
   return `
-    <section class="book-modal journal-modal" id="${id}" aria-hidden="true" aria-labelledby="${id}-title">
+    <section class="book-modal journal-modal ${modalClass}" id="${id}" aria-hidden="true" aria-labelledby="${id}-title">
       <button class="book-backdrop" type="button" data-modal-close></button>
-      <article class="open-book" role="dialog" aria-modal="true">
-        <button class="book-close" type="button" aria-label="Close ${title}" data-modal-close>
+      <article class="open-book ${bookClass}" role="dialog" aria-modal="true">
+        <button class="modal-close" type="button" aria-label="Close ${title}" data-modal-close>
           <span></span>
           <span></span>
         </button>
-        <div class="book-page book-page-left">
-          <h1 id="${id}-title">${title}</h1>
-          ${childrenHTML}
+        <div class="book-page book-page-left ${leftPageClass}">
+          <h1 class="${titleClass}" id="${id}-title">${title}</h1>
+          ${leftHTML}
         </div>
         <div class="book-spine" aria-hidden="true"></div>
-        <div class="book-page book-page-right"></div>
+        <div class="book-page book-page-right ${rightPageClass}">
+          ${rightHTML}
+        </div>
       </article>
     </section>
   `;
 }
 
 function AboutModal() {
+  const aboutParagraphs = content.about.body
+    .map((paragraph) => `<p>${paragraph}</p>`)
+    .join("");
+  const currentlyItems = content.about.currently
+    .map((item) => `<li>${item}</li>`)
+    .join("");
+
   return JournalModal({
     id: "about-modal",
     title: content.about.title,
-    childrenHTML: `
-      <div class="about-note">
-        <img src="${content.about.image}" alt="" />
-        <p>${content.about.text}</p>
-      </div>
+    modalClass: "about-modal",
+    bookClass: "about-book",
+    leftPageClass: "about-left-page",
+    rightPageClass: "about-right-page",
+    titleClass: "about-title",
+    leftHTML: `
+      <figure class="about-photo-card">
+        <img class="about-photo" src="${content.about.image}" alt="Eli Gault-Crabb in graduation attire near the water in Ithaca, NY" />
+        <figcaption class="about-photo-caption">${content.about.imageCaption}</figcaption>
+      </figure>
+    `,
+    rightHTML: `
+      <section class="about-intro">
+        <h2>${content.about.heading}</h2>
+        ${aboutParagraphs}
+        <aside class="currently-card">
+          <h3>${content.about.currentlyTitle}</h3>
+          <ul class="currently-list">${currentlyItems}</ul>
+        </aside>
+      </section>
     `,
   });
 }
@@ -124,6 +158,15 @@ function FooterVersion() {
   return `<p class="version-tag">${content.versionText}</p>`;
 }
 
+function LocalTimeCounter() {
+  return `
+    <time class="local-time-counter" datetime="" aria-label="Local 24-hour time">
+      <span>local</span>
+      <strong data-local-time>--:--:--</strong>
+    </time>
+  `;
+}
+
 function renderHome() {
   app.innerHTML = HomeShell(`
     ${PolaroidNav(content.navItems)}
@@ -131,6 +174,7 @@ function renderHome() {
     ${SocialLinks(content.socialLinks)}
     ${AboutModal()}
     ${ContactModal()}
+    ${LocalTimeCounter()}
     ${FooterVersion()}
   `);
 }
@@ -170,6 +214,26 @@ function bindInteractions() {
   });
 }
 
+function updateLocalTimeCounter() {
+  const time = document.querySelector("[data-local-time]");
+  const counter = document.querySelector(".local-time-counter");
+
+  if (!time || !counter) {
+    return;
+  }
+
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
+  const militaryTime = `${hours}:${minutes}:${seconds}`;
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  time.textContent = militaryTime;
+  counter.dateTime = now.toISOString();
+  counter.title = `${militaryTime} ${timezone}`;
+}
+
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeModal();
@@ -178,3 +242,5 @@ document.addEventListener("keydown", (event) => {
 
 renderHome();
 bindInteractions();
+updateLocalTimeCounter();
+setInterval(updateLocalTimeCounter, 1000);

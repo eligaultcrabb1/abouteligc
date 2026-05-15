@@ -1,6 +1,6 @@
 window.siteContent = {
   banner:
-    "Eli Gault-Crabb / Cornell InfoSci Graduate / UDub Pole Vaulter / Future Office Rookie",
+    "Eli Gault-Crabb / Cornell InfoSci Graduate / UW Pole Vaulter",
 
   versionText: "personal os / v0.1",
 
@@ -49,9 +49,19 @@ window.siteContent = {
 
   about: {
     title: "About",
-    text:
-      "This notebook is ready for your bio, favorite photo, small details, and anything that feels like you.",
-    image: "assets/abt.png",
+    heading: "Hey, I’m Eli.",
+    body: [
+      "I built this site as a digital home base. It’s a place where I can share personal projects, blog a few thoughts, and show a little more about who I am.",
+    ],
+    image: "assets/graduation-photo.JPG",
+    imageCaption: "Senior year, Ithaca, NY",
+    currentlyTitle: "Currently:",
+    currently: [
+      "Studying Informatics + Data Science",
+      "Pole vaulting for the University of Washington Track & Field team",
+      "Interested in project management, sales analytics, and leveraging A.I.",
+      "Current favorite album: Siamese Dream by The Smashing Pumpkins",
+    ],
   },
 
   dailyNote: {

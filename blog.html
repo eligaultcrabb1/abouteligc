@@ -6,14 +6,16 @@
     <title>Blog | Eli Gault-Crabb</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
-    <main class="branch-page">
+  <body class="branch-body">
+    <main class="branch-page blog-page">
       <a class="home-return" href="index.html">Home</a>
-      <section class="branch-card">
-        <p class="branch-kicker">Blog</p>
-        <h1>Writing</h1>
-        <p>Personal posts, notes, and essays will live here.</p>
+      <section class="blog-header">
+        <h1 class="blog-title">Blog</h1>
+        <p class="blog-intro">Personal posts, notes, and essays will live here.</p>
+        <div class="blog-list" id="blog-list" aria-live="polite"></div>
       </section>
     </main>
+    <script src="blogPosts.js"></script>
+    <script src="blogPage.js"></script>
   </body>
 </html>
