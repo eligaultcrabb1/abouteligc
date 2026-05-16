@@ -51,12 +51,12 @@ window.siteContent = {
         caption: "Senior year, Ithaca, NY",
       },
       {
-        src: "assets/uwjersey.JPG",
-        caption: "Husky Opener, 2026",
-      },
-      {
         src: "assets/famwed.jpg",
         caption: "The Gault-Crabbs in Madison, WI",
+      },
+      {
+        src: "assets/uwjersey.JPG",
+        caption: "Husky Opener, 2026",
       },
     ],
     currentlyTitle: "Currently:",
