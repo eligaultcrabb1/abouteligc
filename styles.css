@@ -1356,7 +1356,8 @@ body::after {
   border: 1px solid rgba(245, 238, 225, 0.42);
   box-shadow: 0 7px 16px rgba(0, 0, 0, 0.18);
   cursor: pointer;
-  opacity: 0.78;
+  opacity: 0;
+  pointer-events: none;
   transform: translateY(-50%);
   transition:
     background-color 160ms ease,
@@ -1395,7 +1396,9 @@ body::after {
   border: 1px solid rgba(245, 238, 225, 0.42);
   box-shadow: 0 7px 16px rgba(0, 0, 0, 0.18);
   cursor: pointer;
-  opacity: 0.86;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
   transition:
     background-color 160ms ease,
     opacity 160ms ease,
@@ -1419,14 +1422,29 @@ body::after {
   opacity: 1;
 }
 
+.adventure-carousel:hover .adventure-carousel-button,
+.adventure-carousel:focus-within .adventure-carousel-button,
+.adventure-carousel:hover .adventure-carousel-expand,
+.adventure-carousel:focus-within .adventure-carousel-expand,
+.adventure-carousel:hover .adventure-carousel-count,
+.adventure-carousel:focus-within .adventure-carousel-count {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .adventure-carousel-button:hover,
 .adventure-carousel-button:focus-visible {
   transform: translateY(-50%) scale(1.04);
 }
 
+.adventure-carousel:hover .adventure-carousel-expand,
+.adventure-carousel:focus-within .adventure-carousel-expand {
+  transform: translateY(0);
+}
+
 .adventure-carousel-expand:hover,
 .adventure-carousel-expand:focus-visible {
-  transform: scale(1.04) rotate(1deg);
+  transform: translateY(0) scale(1.04) rotate(1deg);
 }
 
 .adventure-carousel-button:active {
@@ -1434,7 +1452,7 @@ body::after {
 }
 
 .adventure-carousel-expand:active {
-  transform: scale(0.96);
+  transform: translateY(0) scale(0.96);
 }
 
 .adventure-carousel-footer {
@@ -1458,13 +1476,23 @@ body::after {
   display: block;
   width: 6px;
   height: 6px;
-  background: rgba(245, 238, 225, 0.48);
+  background: rgba(245, 238, 225, 0.36);
   border: 1px solid rgba(31, 27, 22, 0.24);
   border-radius: 999px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
 }
 
 .adventure-carousel-dot.is-active {
+  background: rgba(245, 238, 225, 0.72);
+}
+
+.adventure-carousel:hover .adventure-carousel-dot,
+.adventure-carousel:focus-within .adventure-carousel-dot {
+  background: rgba(245, 238, 225, 0.58);
+}
+
+.adventure-carousel:hover .adventure-carousel-dot.is-active,
+.adventure-carousel:focus-within .adventure-carousel-dot.is-active {
   background: rgba(245, 238, 225, 0.95);
 }
 
@@ -1479,6 +1507,17 @@ body::after {
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.08em;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.adventure-carousel:hover .adventure-carousel-count,
+.adventure-carousel:focus-within .adventure-carousel-count {
+  transform: translateY(0);
 }
 
 .adventure-lightbox-open {
