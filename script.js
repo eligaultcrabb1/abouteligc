@@ -109,29 +109,13 @@ function AboutModal() {
   });
 }
 
-function ContactModal() {
-  const links = content.contact.links
-    .map((link) => `<a href="${link.href}">${link.label}</a>`)
-    .join("");
-
-  return `
-    <section class="contact-modal" id="contact-modal" aria-hidden="true" aria-labelledby="contact-modal-title">
-      <button class="book-backdrop" type="button" data-modal-close></button>
-      <article class="contact-card" role="dialog" aria-modal="true">
-        <button class="contact-close" type="button" aria-label="Close contact" data-modal-close>×</button>
-        <p class="branch-kicker">Contact</p>
-        <h2 id="contact-modal-title">${content.contact.title}</h2>
-        <a class="contact-email" href="mailto:${content.contact.email}?subject=Hello%20Eli">${content.contact.email}</a>
-        <div class="contact-card-links">${links}</div>
-      </article>
-    </section>
-  `;
-}
-
 function DailyNote(note) {
   return `
     <aside class="daily-note" aria-label="Daily note">
-      <button class="daily-note-close" type="button" aria-label="Hide daily note">×</button>
+      <button class="daily-note-close" type="button" aria-label="Hide daily note">
+        <span></span>
+        <span></span>
+      </button>
       <p>${note.title}</p>
       <span>${note.text}</span>
     </aside>
@@ -173,7 +157,6 @@ function renderHome() {
     ${DailyNote(content.dailyNote)}
     ${SocialLinks(content.socialLinks)}
     ${AboutModal()}
-    ${ContactModal()}
     ${LocalTimeCounter()}
     ${FooterVersion()}
   `);
@@ -191,7 +174,7 @@ function openModal(id) {
 }
 
 function closeModal() {
-  document.querySelectorAll(".book-modal, .contact-modal").forEach((modal) => {
+  document.querySelectorAll(".book-modal").forEach((modal) => {
     modal.setAttribute("aria-hidden", "true");
   });
   document.body.classList.remove("modal-open");

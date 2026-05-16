@@ -31,7 +31,6 @@ No build step, package install, framework, or local server is required.
     ├── sketch icons.jpeg
     ├── adventurez.png
     ├── resume.png
-    ├── contact.png
     ├── polaroid_button_transparent_slot.png
     └── blog/
         └── why-i-built-this-site.jpg

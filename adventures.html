@@ -7,13 +7,26 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="branch-body">
-    <main class="branch-page">
+    <main class="branch-page adventures-page">
       <a class="home-return" href="index.html">Home</a>
-      <section class="branch-card">
-        <p class="branch-kicker">Adventures</p>
-        <h1>Adventures</h1>
-        <p>Photos, videos, and descriptions of what you are up to.</p>
+      <section class="adventures-shell">
+        <header class="adventures-header">
+          <h1 class="adventures-title">Adventures</h1>
+          <p class="adventures-intro">Places I’ve been, things I’ve done, and small notes from the way there.</p>
+        </header>
+
+        <nav class="adventures-filters" aria-label="Adventure filters">
+          <button class="adventure-filter" type="button" data-adventure-filter="All">All</button>
+          <button class="adventure-filter" type="button" data-adventure-filter="Athletics">Athletics</button>
+          <button class="adventure-filter" type="button" data-adventure-filter="Activities">Activities</button>
+          <button class="adventure-filter" type="button" data-adventure-filter="Family">Family</button>
+          <button class="adventure-filter" type="button" data-adventure-filter="Travel">Travel</button>
+        </nav>
+
+        <div id="adventures-grid" class="adventures-grid"></div>
       </section>
     </main>
+    <script src="adventuresData.js"></script>
+    <script src="adventuresPage.js"></script>
   </body>
 </html>

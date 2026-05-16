@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Local Blog Post Creator</title>
+    <link rel="stylesheet" href="admin.css" />
+  </head>
+  <body>
+    <main class="admin-page">
+      <header class="admin-header">
+        <p class="admin-kicker">Private local tool</p>
+        <h1>Blog Post Creator</h1>
+        <p>
+          This page is local only. Use it to create posts, then paste/export into
+          blogPosts.js.
+        </p>
+      </header>
+
+      <section class="admin-grid">
+        <form class="admin-form" id="post-form">
+          <label>
+            Post ID / slug
+            <input id="post-id" name="id" type="text" placeholder="my-new-post" />
+          </label>
+
+          <label>
+            Title
+            <input id="post-title" name="title" type="text" placeholder="Post title" />
+          </label>
+
+          <div class="admin-form-row">
+            <label>
+              Date
+              <input id="post-date" name="date" type="text" placeholder="May 2026" />
+            </label>
+
+            <label>
+              Read time
+              <input id="post-read-time" name="readTime" type="text" placeholder="3 min read" />
+            </label>
+          </div>
+
+          <label>
+            Category
+            <input id="post-category" name="category" type="text" placeholder="Personal" />
+          </label>
+
+          <label>
+            Tags, comma separated
+            <input id="post-tags" name="tags" type="text" placeholder="personal, portfolio, web" />
+          </label>
+
+          <label>
+            Excerpt
+            <textarea id="post-excerpt" name="excerpt" rows="3" placeholder="Short preview text"></textarea>
+          </label>
+
+          <label>
+            Cover image path
+            <input id="post-cover-image" name="coverImage" type="text" placeholder="assets/blog/my-post.jpg" />
+          </label>
+
+          <label>
+            Full post content
+            <textarea
+              id="post-content"
+              name="content"
+              rows="12"
+              placeholder="Write each paragraph separated by a blank line."
+            ></textarea>
+          </label>
+
+          <div class="admin-actions">
+            <button id="copy-post" type="button">Copy Post Object</button>
+            <button id="download-posts" type="button">Download Updated blogPosts.js</button>
+            <button id="clear-draft" class="secondary-action" type="button">Clear Draft</button>
+          </div>
+          <p class="admin-status" id="admin-status" role="status" aria-live="polite"></p>
+        </form>
+
+        <aside class="admin-sidebar">
+          <section class="admin-panel">
+            <h2>Existing Posts</h2>
+            <div id="existing-posts"></div>
+          </section>
+
+          <section class="admin-panel">
+            <h2>Post Object</h2>
+            <pre id="post-output"></pre>
+          </section>
+        </aside>
+      </section>
+
+      <section class="preview-grid">
+        <article class="admin-panel">
+          <h2>Blog Card Preview</h2>
+          <div id="card-preview"></div>
+        </article>
+
+        <article class="admin-panel">
+          <h2>Full Post Preview</h2>
+          <div id="full-preview"></div>
+        </article>
+      </section>
+    </main>
+
+    <script src="blogPosts.js"></script>
+    <script src="admin.js"></script>
+  </body>
+</html>

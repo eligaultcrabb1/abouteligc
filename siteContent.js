@@ -37,14 +37,6 @@ window.siteContent = {
       action: "route",
       href: "resume.html",
     },
-    {
-      id: "contact",
-      label: "Contact",
-      icon: "assets/contact.png",
-      preview: "Email and social links in one place.",
-      action: "modal",
-      modalId: "contact-modal",
-    },
   ],
 
   about: {
@@ -67,25 +59,6 @@ window.siteContent = {
   dailyNote: {
     title: "Daily note",
     text: "Working on the first version of the personal operating system.",
-  },
-
-  contact: {
-    title: "Contact",
-    email: "eligaultcrabb1@gmail.com",
-    links: [
-      {
-        label: "LinkedIn",
-        href: "https://www.linkedin.com/in/eligaultcrabb",
-      },
-      {
-        label: "GitHub",
-        href: "https://github.com/eligaultcrabb1",
-      },
-      {
-        label: "Instagram",
-        href: "https://www.instagram.com/eligc._/",
-      },
-    ],
   },
 
   socialLinks: [
