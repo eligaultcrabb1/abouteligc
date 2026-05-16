@@ -2,6 +2,8 @@ const adventuresGrid = document.getElementById("adventures-grid");
 const filterButtons = document.querySelectorAll("[data-adventure-filter]");
 const adventurePosts = window.adventurePosts || [];
 const carouselPositions = {};
+const expandedBlurbs = {};
+let lightboxElement = null;
 
 const badgeClasses = {
   Athletics: "adventure-badge-athletics",
@@ -25,6 +27,10 @@ function renderBadges(categories) {
 function getAdventureImages(post) {
   if (Array.isArray(post.images) && post.images.length) {
     return post.images;
+  }
+
+  if (Array.isArray(post.image) && post.image.length) {
+    return post.image;
   }
 
   return post.image ? [post.image] : [];
@@ -51,6 +57,14 @@ function renderCarousel(post) {
       ${
         hasMultipleImages
           ? `
+            <button
+              class="adventure-carousel-expand"
+              type="button"
+              aria-label="Expand current photo"
+              data-carousel-expand
+            >
+              <span aria-hidden="true">↗</span>
+            </button>
             <button
               class="adventure-carousel-button adventure-carousel-prev"
               type="button"
@@ -111,6 +125,79 @@ function updateCarousel(card, post) {
   }
 }
 
+function getCurrentAdventureImage(post) {
+  const images = getAdventureImages(post);
+  const currentIndex = images.length ? (carouselPositions[post.id] || 0) % images.length : 0;
+
+  return {
+    currentIndex,
+    image: images[currentIndex] || "",
+    total: images.length,
+  };
+}
+
+function closeLightbox() {
+  if (!lightboxElement) {
+    return;
+  }
+
+  const closingElement = lightboxElement;
+  closingElement.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("adventure-lightbox-open");
+  lightboxElement = null;
+
+  window.setTimeout(() => {
+    closingElement.remove();
+  }, 180);
+}
+
+function openLightbox(post) {
+  const { currentIndex, image, total } = getCurrentAdventureImage(post);
+
+  if (!image) {
+    return;
+  }
+
+  closeLightbox();
+
+  lightboxElement = document.createElement("div");
+  lightboxElement.className = "adventure-lightbox";
+  lightboxElement.setAttribute("aria-hidden", "false");
+  lightboxElement.setAttribute("role", "dialog");
+  lightboxElement.setAttribute("aria-label", `${post.title} photo preview`);
+  lightboxElement.innerHTML = `
+    <div class="adventure-lightbox-panel" role="document">
+      <button class="adventure-lightbox-close" type="button" aria-label="Close expanded photo">
+        <span></span>
+        <span></span>
+      </button>
+      <img class="adventure-lightbox-image" src="${image}" alt="${post.title}" />
+      <p class="adventure-lightbox-caption">
+        ${post.title}${total > 1 ? ` / ${currentIndex + 1} of ${total}` : ""}
+      </p>
+    </div>
+  `;
+
+  document.body.appendChild(lightboxElement);
+  document.body.classList.add("adventure-lightbox-open");
+  lightboxElement.querySelector(".adventure-lightbox-close")?.focus();
+}
+
+function updateReadMoreButtons() {
+  adventuresGrid?.querySelectorAll(".adventure-card").forEach((card) => {
+    const blurb = card.querySelector(".adventure-blurb");
+    const button = card.querySelector("[data-blurb-toggle]");
+
+    if (!blurb || !button) {
+      return;
+    }
+
+    const isExpanded = blurb.classList.contains("is-expanded");
+    const needsToggle = isExpanded || blurb.scrollHeight > blurb.clientHeight + 1;
+    button.hidden = !needsToggle;
+  });
+}
+
 function renderAdventures(category = "All") {
   if (!adventuresGrid) {
     return;
@@ -123,8 +210,10 @@ function renderAdventures(category = "All") {
 
   adventuresGrid.innerHTML = filteredPosts.length
     ? filteredPosts
-        .map(
-          (post) => `
+        .map((post) => {
+          const isExpanded = Boolean(expandedBlurbs[post.id]);
+
+          return `
             <article class="adventure-card" id="${post.id}">
               <div class="adventure-image-wrap">
                 ${renderCarousel(post)}
@@ -136,13 +225,24 @@ function renderAdventures(category = "All") {
                 </div>
                 <h2 class="adventure-title">${post.title}</h2>
                 <p class="adventure-place">${post.place}</p>
-                <p class="adventure-blurb">${post.blurb}</p>
+                <p class="adventure-blurb ${isExpanded ? "is-expanded" : ""}">${post.blurb}</p>
+                <button
+                  class="adventure-read-more"
+                  type="button"
+                  data-blurb-toggle="${post.id}"
+                  aria-expanded="${isExpanded}"
+                  hidden
+                >
+                  ${isExpanded ? "Show less" : "Read more"}
+                </button>
               </div>
             </article>
-          `
-        )
+          `;
+        })
         .join("")
     : '<p class="adventure-empty">Nothing here yet.</p>';
+
+  requestAnimationFrame(updateReadMoreButtons);
 }
 
 function setActiveFilter(activeButton) {
@@ -159,6 +259,38 @@ filterButtons.forEach((button) => {
 });
 
 adventuresGrid?.addEventListener("click", (event) => {
+  const readMoreButton = event.target.closest("[data-blurb-toggle]");
+  if (readMoreButton) {
+    const postId = readMoreButton.dataset.blurbToggle;
+    const card = readMoreButton.closest(".adventure-card");
+    const blurb = card?.querySelector(".adventure-blurb");
+    const isExpanded = !blurb?.classList.contains("is-expanded");
+
+    if (!blurb) {
+      return;
+    }
+
+    expandedBlurbs[postId] = isExpanded;
+    blurb.classList.toggle("is-expanded", isExpanded);
+    readMoreButton.textContent = isExpanded ? "Show less" : "Read more";
+    readMoreButton.setAttribute("aria-expanded", String(isExpanded));
+    updateReadMoreButtons();
+    return;
+  }
+
+  const expandButton = event.target.closest("[data-carousel-expand]");
+  if (expandButton) {
+    const carousel = expandButton.closest("[data-adventure-id]");
+    const postId = carousel?.dataset.adventureId;
+    const post = adventurePosts.find((item) => item.id === postId);
+
+    if (post) {
+      openLightbox(post);
+    }
+
+    return;
+  }
+
   const button = event.target.closest("[data-carousel-direction]");
 
   if (!button) {
@@ -179,6 +311,25 @@ adventuresGrid?.addEventListener("click", (event) => {
   const currentIndex = carouselPositions[post.id] || 0;
   carouselPositions[post.id] = (currentIndex + direction + images.length) % images.length;
   updateCarousel(card, post);
+});
+
+document.addEventListener("click", (event) => {
+  if (!lightboxElement) {
+    return;
+  }
+
+  const clickedBackdrop = event.target === lightboxElement;
+  const clickedClose = event.target.closest(".adventure-lightbox-close");
+
+  if (clickedBackdrop || clickedClose) {
+    closeLightbox();
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeLightbox();
+  }
 });
 
 setActiveFilter(filterButtons[0]);

@@ -45,8 +45,20 @@ window.siteContent = {
     body: [
       "I built this site as a digital home base. It’s a place where I can share personal projects, blog a few thoughts, and show a little more about who I am.",
     ],
-    image: "assets/graduation-photo.JPG",
-    imageCaption: "Senior year, Ithaca, NY",
+    images: [
+      {
+        src: "assets/graduation-photo.JPG",
+        caption: "Senior year, Ithaca, NY",
+      },
+      {
+        src: "assets/uwjersey.jpg",
+        caption: "Husky Opener, 2026",
+      },
+      {
+        src: "assets/famwed.jpg",
+        caption: "The Gault-Crabbs in Madison, WI",
+      },
+    ],
     currentlyTitle: "Currently:",
     currently: [
       "Studying Informatics + Data Science",

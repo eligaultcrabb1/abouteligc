@@ -1,5 +1,6 @@
 const content = window.siteContent;
 const app = document.getElementById("app");
+let aboutImageIndex = 0;
 
 const icons = {
   linkedin:
@@ -74,6 +75,106 @@ function JournalModal({
   `;
 }
 
+function getAboutImages() {
+  if (Array.isArray(content.about.images) && content.about.images.length) {
+    return content.about.images;
+  }
+
+  if (content.about.image) {
+    return [
+      {
+        src: content.about.image,
+        caption: content.about.imageCaption || "",
+      },
+    ];
+  }
+
+  return [];
+}
+
+function renderAboutPhotoCarousel() {
+  const images = getAboutImages();
+  const currentIndex = images.length ? aboutImageIndex % images.length : 0;
+  const currentImage = images[currentIndex];
+  const hasMultipleImages = images.length > 1;
+
+  if (!currentImage) {
+    return "";
+  }
+
+  return `
+    <figure class="about-photo-card">
+      <div class="about-photo-carousel" data-about-carousel>
+        <img
+          class="about-photo"
+          src="${currentImage.src}"
+          alt="About photo for Eli Gault-Crabb"
+          data-about-photo
+        />
+        ${
+          hasMultipleImages
+            ? `
+              <button
+                class="about-carousel-button about-carousel-prev"
+                type="button"
+                aria-label="Previous about photo"
+                data-about-carousel-direction="-1"
+              >
+                <span aria-hidden="true">‹</span>
+              </button>
+              <button
+                class="about-carousel-button about-carousel-next"
+                type="button"
+                aria-label="Next about photo"
+                data-about-carousel-direction="1"
+              >
+                <span aria-hidden="true">›</span>
+              </button>
+              <div class="about-carousel-dots" aria-hidden="true">
+                ${images
+                  .map(
+                    (_, index) => `
+                      <span class="about-carousel-dot ${index === currentIndex ? "is-active" : ""}"></span>
+                    `
+                  )
+                  .join("")}
+              </div>
+            `
+            : ""
+        }
+      </div>
+      <figcaption class="about-photo-caption" data-about-photo-caption>${currentImage.caption || ""}</figcaption>
+    </figure>
+  `;
+}
+
+function updateAboutPhotoCarousel(direction) {
+  const images = getAboutImages();
+
+  if (images.length < 2) {
+    return;
+  }
+
+  aboutImageIndex = (aboutImageIndex + direction + images.length) % images.length;
+
+  const currentImage = images[aboutImageIndex];
+  const photo = document.querySelector("[data-about-photo]");
+  const caption = document.querySelector("[data-about-photo-caption]");
+  const dots = document.querySelectorAll(".about-carousel-dot");
+
+  if (photo) {
+    photo.src = currentImage.src;
+  }
+
+  if (caption) {
+    caption.textContent = currentImage.caption || "";
+  }
+
+  dots.forEach((dot, index) => {
+    dot.classList.toggle("is-active", index === aboutImageIndex);
+  });
+}
+
 function AboutModal() {
   const aboutParagraphs = content.about.body
     .map((paragraph) => `<p>${paragraph}</p>`)
@@ -90,20 +191,15 @@ function AboutModal() {
     leftPageClass: "about-left-page",
     rightPageClass: "about-right-page",
     titleClass: "about-title",
-    leftHTML: `
-      <figure class="about-photo-card">
-        <img class="about-photo" src="${content.about.image}" alt="Eli Gault-Crabb in graduation attire near the water in Ithaca, NY" />
-        <figcaption class="about-photo-caption">${content.about.imageCaption}</figcaption>
-      </figure>
-    `,
+    leftHTML: renderAboutPhotoCarousel(),
     rightHTML: `
       <section class="about-intro">
         <h2>${content.about.heading}</h2>
         ${aboutParagraphs}
-        <aside class="currently-card">
+        <section class="currently-card">
           <h3>${content.about.currentlyTitle}</h3>
           <ul class="currently-list">${currentlyItems}</ul>
-        </aside>
+        </section>
       </section>
     `,
   });
@@ -194,6 +290,12 @@ function bindInteractions() {
 
   document.querySelector(".daily-note-close")?.addEventListener("click", () => {
     document.querySelector(".daily-note")?.setAttribute("hidden", "");
+  });
+
+  document.querySelectorAll("[data-about-carousel-direction]").forEach((button) => {
+    button.addEventListener("click", () => {
+      updateAboutPhotoCarousel(Number(button.dataset.aboutCarouselDirection));
+    });
   });
 }
 

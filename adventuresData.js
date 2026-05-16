@@ -17,13 +17,16 @@ window.adventureCategories = ["All", "Athletics", "Activities", "Family", "Trave
 window.adventurePosts = [
   {
     id: "don-kirby-invite-2026",
-    title:"Don Kirby Invite 2026",
-    year: "2026",
-    place: "Albequerque, NM",
-    categories: ["Athletics", "Travel"]
-    image: ["assets/adventures/abq1.jpg","assets/adventures/abq14.jpg",
-      "assets/adventures/abq2.jpg","assets/adventures/abq3.jpg"
+    title: "Don Kirby Invite 2026",
+    year: "Feb 2026",
+    place: "Albuquerque, NM",
+    categories: ["Athletics", "Travel"],
+    image: [
+      "assets/adventures/abq1.jpg",
+      "assets/adventures/abq4.jpg",
+      "assets/adventures/abq2.jpg",
+      "assets/adventures/abq3.jpg",
     ],
-    blurb: "Vaulted at the Don Kirby Invitational in ABQ. Jumped 5.46m and took 3 good attempts at a 5.61 bar.",
+    blurb: "Vaulted at the Don Kirby Invitational in ABQ. Jumped 5.46m and took 3 good attempts at 5.61m. Decided Los Pollos Hermanos would be a proper post meet meal. ",
   },
 ];
