@@ -51,7 +51,7 @@ window.siteContent = {
         caption: "Senior year, Ithaca, NY",
       },
       {
-        src: "assets/uwjersey.jpg",
+        src: "assets/uwjersey.JPG",
         caption: "Husky Opener, 2026",
       },
       {
