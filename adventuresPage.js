@@ -4,6 +4,7 @@ const adventurePosts = window.adventurePosts || [];
 const carouselPositions = {};
 const expandedBlurbs = {};
 let lightboxElement = null;
+let lightboxPost = null;
 
 const badgeClasses = {
   Athletics: "adventure-badge-athletics",
@@ -22,6 +23,18 @@ function renderBadges(categories) {
       `
     )
     .join("");
+}
+
+function getAdventureTime(post) {
+  const parsedDate = Date.parse(post.year);
+
+  if (!Number.isNaN(parsedDate)) {
+    return parsedDate;
+  }
+
+  const parsedYear = Number.parseInt(post.year, 10);
+
+  return Number.isNaN(parsedYear) ? 0 : Date.parse(`December 31 ${parsedYear}`);
 }
 
 function getAdventureImages(post) {
@@ -145,14 +158,61 @@ function closeLightbox() {
   closingElement.setAttribute("aria-hidden", "true");
   document.body.classList.remove("adventure-lightbox-open");
   lightboxElement = null;
+  lightboxPost = null;
 
   window.setTimeout(() => {
     closingElement.remove();
   }, 180);
 }
 
-function openLightbox(post) {
+function updateLightbox(post) {
+  if (!lightboxElement || !post) {
+    return;
+  }
+
   const { currentIndex, image, total } = getCurrentAdventureImage(post);
+  const imageElement = lightboxElement.querySelector(".adventure-lightbox-image");
+  const caption = lightboxElement.querySelector(".adventure-lightbox-caption");
+  const dots = lightboxElement.querySelectorAll(".adventure-lightbox-dot");
+
+  if (imageElement) {
+    imageElement.src = image;
+  }
+
+  if (caption) {
+    caption.textContent = `${post.title}${total > 1 ? ` / ${currentIndex + 1} of ${total}` : ""}`;
+  }
+
+  dots.forEach((dot, index) => {
+    dot.classList.toggle("is-active", index === currentIndex);
+  });
+}
+
+function moveLightbox(direction) {
+  if (!lightboxPost) {
+    return;
+  }
+
+  const images = getAdventureImages(lightboxPost);
+
+  if (images.length < 2) {
+    return;
+  }
+
+  const currentIndex = carouselPositions[lightboxPost.id] || 0;
+  carouselPositions[lightboxPost.id] = (currentIndex + direction + images.length) % images.length;
+  updateLightbox(lightboxPost);
+
+  const card = document.getElementById(lightboxPost.id);
+  if (card) {
+    updateCarousel(card, lightboxPost);
+  }
+}
+
+function openLightbox(post) {
+  const images = getAdventureImages(post);
+  const { currentIndex, image, total } = getCurrentAdventureImage(post);
+  const hasMultipleImages = images.length > 1;
 
   if (!image) {
     return;
@@ -165,6 +225,7 @@ function openLightbox(post) {
   lightboxElement.setAttribute("aria-hidden", "false");
   lightboxElement.setAttribute("role", "dialog");
   lightboxElement.setAttribute("aria-label", `${post.title} photo preview`);
+  lightboxPost = post;
   lightboxElement.innerHTML = `
     <div class="adventure-lightbox-panel" role="document">
       <button class="adventure-lightbox-close" type="button" aria-label="Close expanded photo">
@@ -172,6 +233,37 @@ function openLightbox(post) {
         <span></span>
       </button>
       <img class="adventure-lightbox-image" src="${image}" alt="${post.title}" />
+      ${
+        hasMultipleImages
+          ? `
+            <button
+              class="adventure-lightbox-arrow adventure-lightbox-prev"
+              type="button"
+              aria-label="Previous expanded photo"
+              data-lightbox-direction="-1"
+            >
+              <span aria-hidden="true">‹</span>
+            </button>
+            <button
+              class="adventure-lightbox-arrow adventure-lightbox-next"
+              type="button"
+              aria-label="Next expanded photo"
+              data-lightbox-direction="1"
+            >
+              <span aria-hidden="true">›</span>
+            </button>
+            <div class="adventure-lightbox-dots" aria-hidden="true">
+              ${images
+                .map(
+                  (_, index) => `
+                    <span class="adventure-lightbox-dot ${index === currentIndex ? "is-active" : ""}"></span>
+                  `
+                )
+                .join("")}
+            </div>
+          `
+          : ""
+      }
       <p class="adventure-lightbox-caption">
         ${post.title}${total > 1 ? ` / ${currentIndex + 1} of ${total}` : ""}
       </p>
@@ -209,7 +301,8 @@ function renderAdventures(category = "All") {
       : adventurePosts.filter((post) => post.categories.includes(category));
 
   adventuresGrid.innerHTML = filteredPosts.length
-    ? filteredPosts
+    ? [...filteredPosts]
+        .sort((firstPost, secondPost) => getAdventureTime(secondPost) - getAdventureTime(firstPost))
         .map((post) => {
           const isExpanded = Boolean(expandedBlurbs[post.id]);
 
@@ -320,6 +413,12 @@ document.addEventListener("click", (event) => {
 
   const clickedBackdrop = event.target === lightboxElement;
   const clickedClose = event.target.closest(".adventure-lightbox-close");
+  const arrowButton = event.target.closest("[data-lightbox-direction]");
+
+  if (arrowButton) {
+    moveLightbox(Number(arrowButton.dataset.lightboxDirection));
+    return;
+  }
 
   if (clickedBackdrop || clickedClose) {
     closeLightbox();
@@ -329,6 +428,19 @@ document.addEventListener("click", (event) => {
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeLightbox();
+    return;
+  }
+
+  if (!lightboxElement) {
+    return;
+  }
+
+  if (event.key === "ArrowLeft") {
+    moveLightbox(-1);
+  }
+
+  if (event.key === "ArrowRight") {
+    moveLightbox(1);
   }
 });
 

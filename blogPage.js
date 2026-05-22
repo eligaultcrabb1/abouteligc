@@ -1,6 +1,12 @@
 const blogList = document.getElementById("blog-list");
 const posts = window.blogPosts || [];
 
+function getPostTime(post) {
+  const parsedDate = Date.parse(post.date);
+
+  return Number.isNaN(parsedDate) ? 0 : parsedDate;
+}
+
 function renderBlogPosts() {
   if (!blogList) {
     return;
@@ -11,7 +17,8 @@ function renderBlogPosts() {
     return;
   }
 
-  blogList.innerHTML = posts
+  blogList.innerHTML = [...posts]
+    .sort((firstPost, secondPost) => getPostTime(secondPost) - getPostTime(firstPost))
     .map(
       (post) => `
         <a class="blog-card" id="${post.id}" href="blog-post.html?id=${post.id}">
